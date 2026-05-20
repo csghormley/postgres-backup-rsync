@@ -8,6 +8,10 @@ if [ -z "$DATABASE_URL" ] || [ -z "$REMOTE_HOST" ] || [ -z "$REMOTE_USER" ] || [
   exit 1
 fi
 
+if [ -z "$SSH_PORT" ]; then
+  SSH_PORT=22
+fi
+
 # Write SSH key to temp file
 KEY_PATH="/tmp/backup_key"
 echo "$SSH_PRIVATE_KEY" | base64 -d > "$KEY_PATH"
@@ -27,7 +31,7 @@ echo "Backup created: $BACKUP_FILE"
 echo "Syncing to remote server..."
 
 # Rsync to remote server
-rsync -avz -e "ssh -i $KEY_PATH -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+rsync -avz -e "ssh -p$SSH_PORT -i $KEY_PATH -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
   "$BACKUP_FILE" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/"
 
 echo "Backup synced successfully"
