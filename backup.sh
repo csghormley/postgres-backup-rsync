@@ -17,7 +17,7 @@ KEY_PATH="/tmp/backup_key"
 echo "$SSH_PRIVATE_KEY" | base64 -d > "$KEY_PATH"
 chmod 600 "$KEY_PATH"
 
-TIMESTAMP=$(date +%Y-%m-%d)
+TIMESTAMP=$(date +%Y-%m-%d-%H%M%S)
 BACKUP_FILE="/tmp/backup-${TIMESTAMP}.sql.gz"
 
 trap "rm -f $KEY_PATH $BACKUP_FILE" EXIT
