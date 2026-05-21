@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily cleanup of old backup files
+Requires=cleanup_peregrine_backups.service
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+AccuracySec=1m
+
+[Install]
+WantedBy=timers.target
