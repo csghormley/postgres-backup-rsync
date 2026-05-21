@@ -2,6 +2,7 @@ The cleanup script is run daily from systemd on the backup server.
 
 Installing:
 
+0. edit the systemd files to ensure directories and refs correct
 1. copy the files to /etc/systemd/system
 2. reload
       systemctl daemon reload
@@ -11,6 +12,6 @@ Installing:
 4. confirm the timer is running
       systemctl list-timers | grep cleanup
 5. run the service manually, and confirm success
-      systemctl start cleanup_peregrine_backups.service
-      systemctl status cleanup_peregrine_backups.service
+      systemctl start cleanup_backups.service
+      systemctl status cleanup_backups.service
 

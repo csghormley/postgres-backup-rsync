@@ -1,6 +1,6 @@
 [Unit]
 Description=Daily cleanup of old backup files
-Requires=cleanup_peregrine_backups.service
+Requires=cleanup_backups.service
 
 [Timer]
 OnCalendar=daily
