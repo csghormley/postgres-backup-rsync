@@ -32,7 +32,11 @@ echo "Backup created: $BACKUP_FILE"
 echo "Syncing to remote server..."
 
 # Rsync to remote server
-rsync -avz -e "ssh -p$SSH_PORT -i $KEY_PATH -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-  "$BACKUP_FILE" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/"
+# After line 18, add debug output:
+echo "SSH key size: $(wc -c < "$KEY_PATH") bytes"
+ssh -vvv -p $SSH_PORT -i "$KEY_PATH" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "${REMOTE_USER}@${REMOTE_HOST}" "which rsync"
+
+#rsync -avz -e "ssh -p$SSH_PORT -i $KEY_PATH -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+#  "$BACKUP_FILE" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/"
 
 echo "Backup synced successfully"
