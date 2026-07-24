@@ -31,8 +31,20 @@ pg_dump "$DATABASE_URL" | gzip > "$BACKUP_FILE"
 echo "Backup created: $BACKUP_FILE"
 echo "Syncing to remote server..."
 
-# Rsync to remote server
-rsync -avz -e "ssh -p$SSH_PORT -i $KEY_PATH -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-  "$BACKUP_FILE" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/"
-
-echo "Backup synced successfully"
+MAX_RETRIES=3
+RETRY_DELAY=10
+for attempt in $(seq 1 $MAX_RETRIES); do
+  if rsync -avz -e "ssh -p$SSH_PORT -i $KEY_PATH -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+    "$BACKUP_FILE" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/"; then
+    echo "Backup synced successfully"
+    break
+  fi
+  if [ "$attempt" -lt "$MAX_RETRIES" ]; then
+    echo "rsync failed (attempt $attempt/$MAX_RETRIES), retrying in ${RETRY_DELAY}s..."
+    sleep "$RETRY_DELAY"
+    RETRY_DELAY=$((RETRY_DELAY * 2))
+  else
+    echo "rsync failed after $MAX_RETRIES attempts"
+    exit 1
+  fi
+done
